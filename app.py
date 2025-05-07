@@ -35,3 +35,19 @@ if st.button("Recommend"):
     st.subheader("Recommended Movies:")
     for movie in recommendations:
         st.write(movie)
+
+
+
+import os
+import zipfile
+import pickle
+
+# Check and extract ZIP
+if not os.path.exists('simmilarity.pkl'):
+    with zipfile.ZipFile('simmilarity.zip', 'r') as zip_ref:
+        zip_ref.extractall()
+
+# Now load the .pkl
+with open('simmilarity.pkl', 'rb') as f:
+    simmilarity = pickle.load(f)
+

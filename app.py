@@ -1,13 +1,21 @@
 import os
-import zipfile
 import pickle
 import streamlit as st
 import pandas as pd
+import gdown  # Ensure this is in your requirements.txt
 
-# Step 1: Extract the ZIP file only if similarity.pkl doesn't exist
-if not os.path.exists('data/similarity.pkl'):
-    with zipfile.ZipFile('data/similarity.zip', 'r') as zip_ref:
-        zip_ref.extractall('data')
+# Ensure the 'data' directory exists
+os.makedirs('data', exist_ok=True)
+
+# Google Drive File ID for similarity.pkl
+file_id = '1YduzIMdhDLOlKd1o1OmeAQoN3t3HURhD'
+output_path = 'data/similarity.pkl'
+
+# Step 1: Download similarity.pkl from Google Drive if not exists
+if not os.path.exists(output_path):
+    url = f'https://drive.google.com/uc?id={file_id}'
+    st.write("📥 Downloading model file...")
+    gdown.download(url, output_path, quiet=False)
 
 # Step 2: Load similarity matrix and movie dictionary
 with open('data/similarity.pkl', 'rb') as f:
@@ -30,7 +38,7 @@ def recommend(movie_title):
     return recommended_movies
 
 # Step 4: Streamlit UI
-st.title(" 🎬 Movie Recommender System")
+st.title("🎬 Movie Recommender System")
 
 Selected_movie_name = st.selectbox(
     "Select a movie",

@@ -1,14 +1,24 @@
+import os
+import zipfile
 import pickle
 import streamlit as st
 import pandas as pd
 
-# Load similarity matrix and movie dictionary
-simmilarity = pickle.load(open('simmilarity.pkl', 'rb'))
-movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
+# Step 1: Extract the ZIP file only if simmilarity.pkl doesn't exist
+if not os.path.exists('simmilarity.pkl'):
+    with zipfile.ZipFile('simmilarity.zip', 'r') as zip_ref:
+        zip_ref.extractall()
+
+# Step 2: Load similarity matrix and movie dictionary
+with open('simmilarity.pkl', 'rb') as f:
+    simmilarity = pickle.load(f)
+
+with open('movie_dict.pkl', 'rb') as f:
+    movies_dict = pickle.load(f)
+
 movies = pd.DataFrame(movies_dict)
 
-
-# Function to recommend movies
+# Step 3: Define the recommendation function
 def recommend(movie_title):
     movie_index = movies[movies["title"] == movie_title].index[0]
     distances = simmilarity[movie_index]
@@ -16,13 +26,10 @@ def recommend(movie_title):
 
     recommended_movies = []
     for i in movies_list:
-        #movie_id=i[0]
-        #fetch poster from   API
         recommended_movies.append(movies.iloc[i[0]]["title"])
     return recommended_movies
 
-
-# Streamlit UI
+# Step 4: Streamlit UI
 st.title(" 🎬 Movie Recommender System")
 
 Selected_movie_name = st.selectbox(
@@ -35,19 +42,3 @@ if st.button("Recommend"):
     st.subheader("Recommended Movies:")
     for movie in recommendations:
         st.write(movie)
-
-
-
-import os
-import zipfile
-import pickle
-
-# Check and extract ZIP
-if not os.path.exists('simmilarity.pkl'):
-    with zipfile.ZipFile('simmilarity.zip', 'r') as zip_ref:
-        zip_ref.extractall()
-
-# Now load the .pkl
-with open('simmilarity.pkl', 'rb') as f:
-    simmilarity = pickle.load(f)
-
